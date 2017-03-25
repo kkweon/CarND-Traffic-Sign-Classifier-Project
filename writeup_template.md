@@ -1,12 +1,5 @@
 #**Traffic Sign Recognition** 
 
-##Writeup Template
-
-###You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
-
----
-
-**Build a Traffic Sign Recognition Project**
 
 The goals / steps of this project are the following:
 * Load the data set (see below for links to the project data set)
@@ -16,170 +9,230 @@ The goals / steps of this project are the following:
 * Analyze the softmax probabilities of the new images
 * Summarize the results with a written report
 
+Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
+
+The project code is [here](https://github.com/kkweon/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
 
 [//]: # (Image References)
 
-[image1]: ./examples/visualization.jpg "Visualization"
-[image2]: ./examples/grayscale.jpg "Grayscaling"
-[image3]: ./examples/random_noise.jpg "Random Noise"
-[image4]: ./examples/placeholder.png "Traffic Sign 1"
-[image5]: ./examples/placeholder.png "Traffic Sign 2"
-[image6]: ./examples/placeholder.png "Traffic Sign 3"
-[image7]: ./examples/placeholder.png "Traffic Sign 4"
-[image8]: ./examples/placeholder.png "Traffic Sign 5"
+[raw]: ./examples/raw.png "Datset"
+[distplot]: ./examples/distplot.png "Distribution Plot"
+[before_process]: ./examples/before_process.png "Before PreProcessing"
+[after_process]: ./examples/after_process.png "After PreProcessing"
+[data_augmentation]: ./examples/after_data_augmented_2.png "Data Augmented"
+[new_dist]: ./examples/after_data_augmented_distplot.png "Data Augmented DistPlot"
 
-## Rubric Points
-###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
+[test]: ./examples/test_images.png "test images"
+[test-result]: ./examples/test_images_result.png "test images result"
 
----
-###Writeup / README
+[test1]: ./examples/test1.png 
+[test1-result]: ./examples/test1-softmax.png "test1 image"
 
-####1. Provide a Writeup / README that includes all the rubric points and how you addressed each one. You can submit your writeup as markdown or pdf. You can use this template as a guide for writing the report. The submission includes the project code.
+[test2]: ./examples/test2.png 
+[test2-result]: ./examples/test2-softmax.png "test2 image"
 
-You're reading it! and here is a link to my [project code](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
+[test3]: ./examples/test3.png 
+[test3-result]: ./examples/test3-softmax.png "test3 image"
+
+[test4]: ./examples/test4.png 
+[test4-result]: ./examples/test4-softmax.png "test4 image"
+
+[test5]: ./examples/test5.png 
+[test5-result]: ./examples/test5-softmax.png "test5 image"
 
 ###Data Set Summary & Exploration
 
-####1. Provide a basic summary of the data set and identify where in your code the summary was done. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
+####1. Dataset Summary
 
-The code for this step is contained in the second code cell of the IPython notebook.  
+* The size of training set is 34,799
+* The size of test set is 12,630
+* The shape of a traffic sign image is (32, 32, 3)
+* The number of unique classes/labels in the data set is 43 (classes)
 
-I used the pandas library to calculate summary statistics of the traffic
-signs data set:
+My dataset looks like this
 
-* The size of training set is ?
-* The size of test set is ?
-* The shape of a traffic sign image is ?
-* The number of unique classes/labels in the data set is ?
+![dataset][raw]
 
-####2. Include an exploratory visualization of the dataset and identify where the code is in your code file.
+####2. More visualization
 
-The code for this step is contained in the third code cell of the IPython notebook.  
+The code for this step is contained in the third code cell of the Jupyter notebook.  
 
-Here is an exploratory visualization of the data set. It is a bar chart showing how the data ...
+Here is an exploratory visualization of the data set. It is a bar chart showing the label distribution of the dataset
+It shows that some classes have more/less examples than others and it can be a problem because the model will favor to the larger size examples instead of learning correct features.
 
-![alt text][image1]
+![Distribution][distplot]
 
 ###Design and Test a Model Architecture
 
-####1. Describe how, and identify where in your code, you preprocessed the image data. What tecniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc.
+####1. Preprocessing Step
 
-The code for this step is contained in the fourth code cell of the IPython notebook.
+The code for this step is contained in the fourth code cell of the Jupyter notebook.
 
-As a first step, I decided to convert the images to grayscale because ...
+As a first step, I decided to normalize the images because if you look at above examples, it seems some images are brighter or darker than other images.
+It can be difficult for my network to detect features because every bright pixel means higher number.
 
-Here is an example of a traffic sign image before and after grayscaling.
+Here is an example of a traffic sign image before and after 
 
-![alt text][image2]
+![Before][before_process]
+![After][after_process]
 
-As a last step, I normalized the image data because ...
+Notice the last image was almost unvisible and after the normalization, it's visible again! It looks much sharper(higher contrasts) as well.
 
-####2. Describe how, and identify where in your code, you set up training, validation and testing data. How much data was in each set? Explain what techniques were used to split the data into these sets. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, identify where in your code, and provide example images of the additional data)
+####2. Image Augmentation
 
-The code for splitting the data into training and validation sets is contained in the fifth code cell of the IPython notebook.  
+Initially, I was able to download the german traffic dataset, which was given as follows
 
-To cross validate my model, I randomly split the training data into a training set and validation set. I did this by ...
+|          | Number of exmples|
+|----------|-----------------:|
+| Train set| 34,799           |
+| Valid set|  4,410           |
+| Test set | 12,630           |
 
-My final training set had X number of images. My validation set and test set had Y and Z number of images.
+Also from above, my train set has a imbalanced class problem. It means for some label, there are fewer/more examples than others such that my network choose to make a decision based on the distribution instead of learning distinct features.
 
-The sixth code cell of the IPython notebook contains the code for augmenting the data set. I decided to generate additional data because ... To add more data to the the data set, I used the following techniques because ... 
+Hence, I decided to create more artificial images by augmenting images.
 
-Here is an example of an original image and an augmented image:
+![Augment][data_augmentation]
 
-![alt text][image3]
+After several steps, I found out that rotation and random zoom works good.
+So I created artificial images from these images to match up the balance.
 
-The difference between the original data set and the augmented data set is the following ... 
+![New DistPlot][new_dist]
+
+and my training set increased to 86,010 images!
 
 
-####3. Describe, and identify where in your code, what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
-The code for my final model is located in the seventh cell of the ipython notebook. 
 
-My final model consisted of the following layers:
+
+
+
+####3. Network Architecture
+
+It's defined under Model Architecture in the jupyter notebook.
+
+After trying out multiple architecures like GoogleNet, VGGnet, and LeNet, I decided to use the vggnet-like architecture because of training time and the performance per training time.
+
 
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
-| Softmax				| etc.        									|
-|						|												|
-|						|												|
+| Conv 3x3 -> Bathcnorm -> Relu     	| 1x1 stride, same padding, outputs 32x32x64 	|
+| Conv 3x3 -> Bathcnorm -> Relu       | 1x1 stride, same padding, outputs 32x32x64    |
+| Max pooling           | 2x2 stride,  outputs 16x16x64                 |
+| Conv 3x3 -> Bathcnorm -> Relu       | 1x1 stride, same padding, outputs 16x16x128   |
+| Conv 3x3 -> Bathcnorm -> Relu       | 1x1 stride, same padding, outputs 16x16x128   |
+| Max pooling	      	| 2x2 stride,  outputs 8x8x128  				|
+| Conv 3x3 -> Bathcnorm -> Relu       | 1x1 stride, same padding, outputs 8x8x256     |
+| Conv 3x3 -> Bathcnorm -> Relu       | 1x1 stride, same padding, outputs 8x8x256     |
+| Max pooling           | 2x2 stride,  outputs 4x4x265                  |
+| Conv 3x3 -> Bathcnorm -> Relu       | 1x1 stride, same padding, outputs 4x4x512     |
+| Conv 3x3 -> Bathcnorm -> Relu       | 1x1 stride, same padding, outputs 4x4x512     |
+| Max pooling           | 2x2 stride,  outputs 2x2x512                  |
+| Flatten               |             									|
+| Fully connected		| dimension 1024								|
+| Batch Normalziation   |                                               |
+| Dropout               |                                               |
+| Fully connected       | dimension 1024                                |
+| Softmax				| probability                                   |
  
 
 
-####4. Describe how, and identify where in your code, you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
+####4. Hyperparameters
 
-The code for training the model is located in the eigth cell of the ipython notebook. 
+The code for training the model is located under Train Step in the notebook.
 
-To train the model, I used an ....
+To train the model, I used the following parameters:
 
-####5. Describe the approach taken for finding a solution. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
+|     Parameter     |  Value |                                                                                              Reason                                                                                             |
+|:-----------------:|:------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+|     Optimizer     |  Adam  | Because of its usage of momentum and adjustment step, I can be a bit more careless in choosing a learning rate                                                                                  |
+|     Batch Size    |   256  | Batch Size is known to work best when it's times of 2 like 128, 256, 512.  The too small batch will be too stochastic. The bigger batch will take longer times to finish iterations.            |
+|       Epoch       |   500  | I just ran it overnight but programmed to save a model when the validation loss is the minimum. Therefore, it works like an early stopping                                                      |
+| L2 Regularization | 0.0001 | Regularization works always good Above this value, the network will begin to underfit!                                                                                                          |
+|      Dropout      |   0.5  | When training mode, dropout 0.5 is applied for fully connected layers. I skipped the convolution layers because convolution layers have already few parameters, thus the dropout is unnecessary |
+|   Batchnorm   |  True  | Always use batchnorm because its parameters can be also learned such that if the network does not need the batchnorm it will not use!                                                              |
 
-The code for calculating the accuracy of the model is located in the ninth cell of the Ipython notebook.
+####5. Performance
+
+The code for calculating the accuracy of the model is located in the ninth cell of the Jupyter notebook.
 
 My final model results were:
-* training set accuracy of ?
-* validation set accuracy of ? 
-* test set accuracy of ?
 
-If an iterative approach was chosen:
-* What was the first architecture that was tried and why was it chosen?
-* What were some problems with the initial architecture?
-* How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to over fitting or under fitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
-* Which parameters were tuned? How were they adjusted and why?
-* What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
+| Dataset |   Loss  | Accuracy |
+|:-------:|:-------:|:--------:|
+|  Train  | 0.00000 |  100.00% |
+|  Valid  | 0.03842 |   99.07% |
+|   Test  | 0.15470 |   98.01% |
 
-If a well known architecture was chosen:
-* What architecture was chosen?
-* Why did you believe it would be relevant to the traffic sign application?
-* How does the final model's accuracy on the training, validation and test set provide evidence that the model is working well?
- 
+I tried out LeNet5, GoogleNet(Inception-v2) and VGGnet. I had to reduce parameters because I was not using the pre-trained values and it turns out the network is so big that it takes forever to train in my machine.
+
+I eventually chose a mini version with VGGnet-like architectures because 
+
+* Multiple of 3x3 filters works same as 5x5 filters because its receptive fields are the same
+* Training time is quicker than GoogleNet
+* It still performed better than simpler LeNet5.
+
+In conclusion, I am satisfied with these results though more data augmentations may increase test set accuracy.
 
 ###Test a Model on New Images
 
-####1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
+####1. Test against 5 new images found on the web
 
 Here are five German traffic signs that I found on the web:
 
-![alt text][image4] ![alt text][image5] ![alt text][image6] 
-![alt text][image7] ![alt text][image8]
+![test-images][test]
 
-The first image might be difficult to classify because ...
+Each images is a sign of:
+* No parking
+* Schoolzone
+* Road work
+* Stop
+* Right-of-way at the next intersection
 
-####2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. Identify where in your code predictions were made. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
+After resizing, images look very rough that in the second image, it's hard to recognize it as a schoolzone signs.
 
-The code for making predictions on my final model is located in the tenth cell of the Ipython notebook.
+
+####2. Top 1 Model Prediction
+
+The code for making predictions on my final model is located in the last section of the notebook.
 
 Here are the results of the prediction:
 
-| Image			        |     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Stop Sign      		| Stop sign   									| 
-| U-turn     			| U-turn 										|
-| Yield					| Yield											|
-| 100 km/h	      		| Bumpy Road					 				|
-| Slippery Road			| Slippery Road      							|
+![test-images-result][test-result]
 
 
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of ...
+The model was able to correctly guess last 3 of the 5 traffic signs, which gives an accuracy of 60%. 
+Using LeNet, it was only correctly guess 1 of the 5 traffic signs.
 
-####3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction and identify where in your code softmax probabilities were outputted. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
+####3. Top 5 Model Prediction
 
-The code for making predictions on my final model is located in the 11th cell of the Ipython notebook.
+The code for making predictions on my final model is located in the 11th cell of the Jupyter notebook.
 
-For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
+For the first image, the highest probability is "Beware of ice/snow"(0.5).
 
-| Probability         	|     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| .60         			| Stop sign   									| 
-| .20     				| U-turn 										|
-| .05					| Yield											|
-| .04	      			| Bumpy Road					 				|
-| .01				    | Slippery Road      							|
+![test1][test1]  
+![test1-result][test1-result]
+
+For the second image, the highest probability is 'Beware of ice/snow' with low confidence (0.3). Again there was no correct label(schoolezone) in the top 5 list.
+The possible reasons might be that both pictures have the blue hue which is common in training images with the 'beware of ice/snow' label.
+
+![test2][test2]  
+![test2-result][test2-result]
 
 
-For the second image ... 
+For the third image, the model correctly predicted the sign of 'road work' with the highest confidence (1.0). The LeNet model was not predicting this correctly.
+
+![test3][test3]  
+![test3-result][test3-result]
+
+For the fourth image, the model correctly predicted the 'stop' sign with some confidence (0.9). The LeNet model was not predicting this correctly.
+
+![test4][test4]  
+![test4-result][test4-result]
+
+For the fifth image, the model correctly predicted the 'right-of-way at the next intersection' sign with the highest confidence (1.0). 
+The LeNet model was predicting this correctly as well.
+
+![test5][test5]  
+![test5-result][test5-result]
