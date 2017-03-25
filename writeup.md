@@ -1,4 +1,4 @@
-#**Traffic Sign Recognition** 
+# **Traffic Sign Recognition** 
 
 
 The goals / steps of this project are the following:
@@ -40,9 +40,9 @@ The project code is [here](https://github.com/kkweon/CarND-Traffic-Sign-Classifi
 [test5]: ./examples/test5.png 
 [test5-result]: ./examples/test5-softmax.png "test5 image"
 
-###Data Set Summary & Exploration
+### Data Set Summary & Exploration
 
-####1. Dataset Summary
+#### 1. Dataset Summary
 
 * The size of training set is 34,799
 * The size of test set is 12,630
@@ -53,7 +53,7 @@ My dataset looks like this
 
 ![dataset][raw]
 
-####2. More visualization
+#### 2. More visualization
 
 The code for this step is contained in the third code cell of the Jupyter notebook.  
 
@@ -62,9 +62,9 @@ It shows that some classes have more/less examples than others and it can be a p
 
 ![Distribution][distplot]
 
-###Design and Test a Model Architecture
+### Design and Test a Model Architecture
 
-####1. Preprocessing Step
+#### 1. Preprocessing Step
 
 The code for this step is contained in the fourth code cell of the Jupyter notebook.
 
@@ -78,7 +78,7 @@ Here is an example of a traffic sign image before and after
 
 Notice the last image was almost unvisible and after the normalization, it's visible again! It looks much sharper(higher contrasts) as well.
 
-####2. Image Augmentation
+#### 2. Image Augmentation
 
 Initially, I was able to download the german traffic dataset, which was given as follows
 
@@ -102,12 +102,7 @@ So I created artificial images from these images to match up the balance.
 and my training set increased to 86,010 images!
 
 
-
-
-
-
-
-####3. Network Architecture
+#### 3. Network Architecture
 
 It's defined under Model Architecture in the jupyter notebook.
 
@@ -137,8 +132,7 @@ After trying out multiple architecures like GoogleNet, VGGnet, and LeNet, I deci
 | Softmax				| probability                                   |
  
 
-
-####4. Hyperparameters
+#### 4. Hyperparameters
 
 The code for training the model is located under Train Step in the notebook.
 
@@ -153,7 +147,7 @@ To train the model, I used the following parameters:
 |      Dropout      |   0.5  | When training mode, dropout 0.5 is applied for fully connected layers. I skipped the convolution layers because convolution layers have already few parameters, thus the dropout is unnecessary |
 |   Batchnorm   |  True  | Always use batchnorm because its parameters can be also learned such that if the network does not need the batchnorm it will not use!                                                              |
 
-####5. Performance
+#### 5. Performance
 
 The code for calculating the accuracy of the model is located in the ninth cell of the Jupyter notebook.
 
@@ -175,9 +169,9 @@ I eventually chose a mini version with VGGnet-like architectures because
 
 In conclusion, I am satisfied with these results though more data augmentations may increase test set accuracy.
 
-###Test a Model on New Images
+### Test a Model on New Images
 
-####1. Test against 5 new images found on the web
+#### 1. Test against 5 new images found on the web
 
 Here are five German traffic signs that I found on the web:
 
@@ -193,7 +187,7 @@ Each images is a sign of:
 After resizing, images look very rough that in the second image, it's hard to recognize it as a schoolzone signs.
 
 
-####2. Top 1 Model Prediction
+#### 2. Top 1 Model Prediction
 
 The code for making predictions on my final model is located in the last section of the notebook.
 
@@ -205,7 +199,7 @@ Here are the results of the prediction:
 The model was able to correctly guess last 3 of the 5 traffic signs, which gives an accuracy of 60%. 
 Using LeNet, it was only correctly guess 1 of the 5 traffic signs.
 
-####3. Top 5 Model Prediction
+#### 3. Top 5 Model Prediction
 
 The code for making predictions on my final model is located in the 11th cell of the Jupyter notebook.
 
